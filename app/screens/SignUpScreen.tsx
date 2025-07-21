@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { SafeAreaView, View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, TextInput, ScrollView } from 'react-native';
+import { register, RegisterPayload } from '../services/authService';
 
 const { width, height } = Dimensions.get('window'); // Get screen dimensions
 
@@ -18,10 +19,25 @@ const SignUpScreen = () => {
   const navigation = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState<'farmer' | 'mill' | 'admin'>('farmer');
+  const [fullName, setFullName] = useState('');
 
   const handleSubmit = async () => {
     if (email && password) {
-      // Handle sign-up logic here
+      try {
+        const payload: RegisterPayload = {
+          email,
+          full_name: fullName,
+          password,
+          role,
+        };
+        await register(payload);
+        // Handle success (e.g., show a message or navigate to login)
+        alert('Registration successful! Please log in.');
+        navigation.navigate('/screens/LoginScreen');
+      } catch (error) {
+        alert('Registration failed: ' + error);
+      }
     }
   };
 
@@ -52,8 +68,8 @@ const SignUpScreen = () => {
             <Text style={styles.label}>Full Name</Text>
             <TextInput
               style={styles.input}
-              value={email}
-              onChangeText={value => setEmail(value)}
+              value={fullName}
+              onChangeText={value => setFullName(value)}
               placeholder="Enter Name"
               placeholderTextColor="#999"
             />
@@ -62,20 +78,41 @@ const SignUpScreen = () => {
             <Text style={styles.label}>Email Address</Text>
             <TextInput
               style={styles.input}
-              value={password}
-              onChangeText={value => setPassword(value)}
+              value={email}
+              onChangeText={value => setEmail(value)}
               placeholder="Enter Email"
               placeholderTextColor="#999"
             />
+
+            {/* Role Selection Buttons */}
+            <Text style={styles.label}>Role</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: isSmallScreen ? 15 : 20 }}>
+              {(['farmer', 'mill', 'admin'] as const).map((r) => (
+                <TouchableOpacity
+                  key={r}
+                  style={[
+                    styles.roleButton,
+                    role === r && styles.roleButtonSelected
+                  ]}
+                  onPress={() => setRole(r)}
+                >
+                  <Text style={role === r ? styles.roleButtonTextSelected : styles.roleButtonText}>{r.charAt(0).toUpperCase() + r.slice(1)}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
 
             {/* Password Input */}
             <Text style={styles.label}>Password</Text>
             <TextInput
               style={styles.input}
+              value={password}
+              onChangeText={value => setPassword(value)}
               secureTextEntry
               placeholder="Enter Password"
               placeholderTextColor="#999"
             />
+
+            
 
             {/* Sign Up Button */}
             <TouchableOpacity
@@ -212,6 +249,28 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: themeColors.accent,
     marginLeft: 5,
+  },
+  roleButton: {
+    flex: 1,
+    paddingVertical: 12,
+    marginHorizontal: 4,
+    borderRadius: 10,
+    backgroundColor: themeColors.inputBg,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  roleButtonSelected: {
+    backgroundColor: themeColors.accent,
+    borderColor: themeColors.accent,
+  },
+  roleButtonText: {
+    color: themeColors.text,
+    fontWeight: '600',
+  },
+  roleButtonTextSelected: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
 

@@ -1,0 +1,32 @@
+# Database Configuration
+DATABASE_URL=postgresql://username:password@localhost:5432/kukkuta_kendra
+TEST_DATABASE_URL=postgresql://username:password@localhost:5432/kukkuta_kendra_test
+
+# Security
+SECRET_KEY=your-secret-key-here
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# File Upload
+UPLOAD_DIR=uploads
+MAX_FILE_SIZE=10485760  # 10MB
+
+# AWS S3 (for production file storage)
+AWS_ACCESS_KEY_ID=your-aws-access-key
+AWS_SECRET_ACCESS_KEY=your-aws-secret-key
+AWS_REGION=us-east-1
+AWS_BUCKET_NAME=your-bucket-name
+
+# Redis (for caching and Celery)
+REDIS_URL=redis://localhost:6379
+
+# Email Configuration
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASSWORD=your-app-password
+
+# API Configuration
+API_V1_STR=/api/v1
+PROJECT_NAME=Kukkuta Kendra API
+BACKEND_CORS_ORIGINS=["http://localhost:3000", "http://localhost:8081"] 

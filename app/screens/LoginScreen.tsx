@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 // import Ionicons from 'react-native-vector-icons/Ionicons'; // Using Ionicons
 import { useNavigation } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
+import { login, LoginPayload } from '../services/authService';
 
 const { width, height } = Dimensions.get('window'); // Get screen dimensions
 const isSmallScreen = height < 700; // Check for small screens like iPhone SE
@@ -29,51 +30,51 @@ export default function LoginScreen() {
 // }
 
   // Current mock authentication
-  const handleMockLogin = () => {
-    const validCredentials = [
-      { email: "farmer@example.com", password: "farmer123", type: "farmer" },
-      { email: "mill@example.com", password: "mill123", type: "mill" },
-        { email: "admin@example.com", password: "admin123", type: "admin" },
-    { email: "report@example.com", password: "report123", type: "report" }
-    ];
+  // const handleMockLogin = () => {
+  //   const validCredentials = [
+  //     { email: "farmer@example.com", password: "farmer123", type: "farmer" },
+  //     { email: "mill@example.com", password: "mill123", type: "mill" },
+  //       { email: "admin@example.com", password: "admin123", type: "admin" },
+  //   { email: "report@example.com", password: "report123", type: "report" }
+  //   ];
 
-    const user = validCredentials.find(
-      cred => cred.email === email && cred.password === password
-    );
+  //   const user = validCredentials.find(
+  //     cred => cred.email === email && cred.password === password
+  //   );
 
-    if (user) {
-      navigateByUserType(user.type);
-    } else {
-      Alert.alert(
-        "Login Failed",
-        "Invalid credentials. Try:\nFarmer: farmer@example.com/farmer123\nMill: mill@example.com/mill123"
-      );
-    }
-  };
+  //   if (user) {
+  //     navigateByUserType(user.type);
+  //   } else {
+  //     Alert.alert(
+  //       "Login Failed",
+  //       "Invalid credentials. Try:\nFarmer: farmer@example.com/farmer123\nMill: mill@example.com/mill123"
+  //     );
+  //   }
+  // };
 
   // Future API integration (ready to uncomment when backend is available)
-  const handleAPILogin = async () => {
-    try {
-      // UNCOMMENT WHEN API IS READY
-      /*
-      const response = await fetch('https://your-api.com/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
+  // const handleAPILogin = async () => {
+  //   try {
+  //     // UNCOMMENT WHEN API IS READY
+  //     /*
+  //     const response = await fetch('https://your-api.com/login', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ email, password })
+  //     });
 
-      const data = await response.json();
+  //     const data = await response.json();
       
-      if (response.ok) {
-        navigateByUserType(data.userType);
-      } else {
-        Alert.alert('Login Failed', data.message || 'Invalid credentials');
-      }
-      */
-    } catch (error) {
-      Alert.alert('Error', 'Network request failed');
-    }
-  };
+  //     if (response.ok) {
+  //       navigateByUserType(data.userType);
+  //     } else {
+  //       Alert.alert('Login Failed', data.message || 'Invalid credentials');
+  //     }
+  //     */
+  //   } catch (error) {
+  //     Alert.alert('Error', 'Network request failed');
+  //   }
+  // };
 
   // Navigation handler
   const navigateByUserType = (userType: string) => {
@@ -92,8 +93,14 @@ export default function LoginScreen() {
   };
 
   // Combined handler (currently using mock)
-  const handleLogin = () => {
-    handleMockLogin(); // Switch to handleAPILogin when API is ready
+  const handleLogin = async () => {
+    try {
+      const payload: LoginPayload = { email, password };
+      const data = await login(payload);
+      navigateByUserType(data.role);
+    } catch (error) {
+      Alert.alert('Login Failed', (error as any).toString());
+    }
   };
 
   return (
