@@ -4,7 +4,6 @@ from datetime import datetime
 
 
 class RoutineDataBase(BaseModel):
-    farm_id: int
     date: datetime
     mortality_count: Optional[int] = 0
     feed_consumption_kg: float

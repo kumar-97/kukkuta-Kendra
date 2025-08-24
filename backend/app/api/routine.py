@@ -20,32 +20,24 @@ def create_routine_data(
     db: Session = Depends(get_db)
 ):
     """Create new routine data for current farmer"""
-    # Verify the farm belongs to the farmer
-    farm = db.query(Farm).filter(
-        Farm.id == routine_data.farm_id,
-        Farm.farmer_id == current_farmer.id
-    ).first()
-    
-    if not farm:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Farm not found or does not belong to you"
-        )
-    
-    # Check if routine data already exists for this date and farm
+    # Check if routine data already exists for this date and farmer
     existing_routine = db.query(RoutineData).filter(
-        RoutineData.farm_id == routine_data.farm_id,
+        RoutineData.farmer_id == current_farmer.id,
         RoutineData.date == routine_data.date
     ).first()
     
     if existing_routine:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Routine data already exists for this date and farm"
+            detail="Routine data already exists for this date"
         )
     
-    # Create routine data
-    db_routine = RoutineData(**routine_data.dict())
+    # Create routine data with current timestamp
+    routine_dict = routine_data.dict()
+    routine_dict['farmer_id'] = current_farmer.id
+    routine_dict['date'] = datetime.now()  # Use current timestamp
+    
+    db_routine = RoutineData(**routine_dict)
     db.add(db_routine)
     db.commit()
     db.refresh(db_routine)
@@ -55,7 +47,6 @@ def create_routine_data(
 
 @router.get("/", response_model=List[RoutineDataResponse])
 def get_my_routine_data(
-    farm_id: Optional[int] = Query(None),
     start_date: Optional[date] = Query(None),
     end_date: Optional[date] = Query(None),
     current_farmer: Farmer = Depends(get_current_farmer),
@@ -63,9 +54,6 @@ def get_my_routine_data(
 ):
     """Get routine data for current farmer with optional filters"""
     query = db.query(RoutineData).filter(RoutineData.farmer_id == current_farmer.id)
-    
-    if farm_id:
-        query = query.filter(RoutineData.farm_id == farm_id)
     
     if start_date:
         query = query.filter(RoutineData.date >= start_date)

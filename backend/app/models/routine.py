@@ -9,7 +9,6 @@ class RoutineData(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     farmer_id = Column(Integer, ForeignKey("farmers.id"), nullable=False)
-    farm_id = Column(Integer, ForeignKey("farms.id"), nullable=False)
     date = Column(DateTime(timezone=True), nullable=False)
     mortality_count = Column(Integer, default=0)
     feed_consumption_kg = Column(Float, nullable=False)
@@ -23,7 +22,6 @@ class RoutineData(Base):
 
     # Relationships
     farmer = relationship("Farmer", back_populates="routine_data")
-    farm = relationship("Farm")
     mortality_records = relationship("MortalityRecord", back_populates="routine_data")
 
     def __repr__(self):

@@ -1,18 +1,20 @@
-import {Text, View} from "react-native"
-import React from "react"
-import WelcomeScreen from "./screens/WelcomeScreen"
-const Index = () =>{
-  return (
-    <View style={{flex:1}}>
-      {/* <view style={{flex:1,backgroundColor:"red"}}>abc </view>
-      <view style={{flex:2,backgroundColor:"blue"}}>abc</view>
-      <view style={{flex:1,backgroundColor:"green"}}>abc</view> */}
-      {/* <Text>Hello first work </Text> */}
-      <WelcomeScreen/>
-    </View>
-    
-  )
-}
+import React from "react";
+import { useRouter } from "expo-router";
+import { useEffect } from "react";
 
+const Index = () => {
+  const router = useRouter();
 
-export default Index
+  useEffect(() => {
+    // Navigate to test screen first to verify app is working
+    const timer = setTimeout(() => {
+      router.replace("/test");
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [router]);
+
+  return null; // Return null since we're navigating away
+};
+
+export default Index;

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kukkuta Kendra - App Download</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .app-info {
+            margin: 20px 0;
+            padding: 15px;
+            background: #ecf0f1;
+            border-radius: 5px;
+        }
+        .download-section {
+            margin: 30px 0;
+        }
+        .qr-container {
+            margin: 20px 0;
+        }
+        .download-button {
+            background: #3498db;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+        .download-button:hover {
+            background: #2980b9;
+        }
+        .instructions {
+            text-align: left;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐔 Kukkuta Kendra</h1>
+        <p>Poultry Management App</p>
+        
+        <div class="app-info">
+            <h3>App Information</h3>
+            <p><strong>Version:</strong> 1.0.0</p>
+            <p><strong>Size:</strong> ~25 MB</p>
+            <p><strong>Platform:</strong> Android</p>
+        </div>
+
+        <div class="download-section">
+            <h3>Download Options</h3>
+            
+            <!-- Direct Download Button -->
+            <a href="#" class="download-button" onclick="downloadAPK()">
+                📱 Download APK
+            </a>
+            
+            <!-- QR Code for Download -->
+            <div class="qr-container">
+                <h4>Scan QR Code to Download</h4>
+                <div id="qrcode"></div>
+                <p><small>Scan with your phone's camera or QR code app</small></p>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>Installation Instructions</h3>
+            <ol>
+                <li>Download the APK file to your Android device</li>
+                <li>Enable "Install from Unknown Sources" in your device settings</li>
+                <li>Open the downloaded APK file</li>
+                <li>Follow the installation prompts</li>
+                <li>Open the app and start managing your poultry farm!</li>
+            </ol>
+        </div>
+
+        <div class="app-info">
+            <h3>Features</h3>
+            <ul style="text-align: left; list-style: none; padding: 0;">
+                <li>✅ User Registration & Login</li>
+                <li>✅ Farmer Dashboard</li>
+                <li>✅ Routine Data Management</li>
+                <li>✅ Mortality Tracking</li>
+                <li>✅ Photo Upload</li>
+                <li>✅ Real-time Data Sync</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Generate QR code for APK download
+        const downloadUrl = 'https://your-domain.com/kukkuta-kendra.apk'; // Replace with actual APK URL
+        
+        QRCode.toCanvas(document.getElementById('qrcode'), downloadUrl, {
+            width: 200,
+            margin: 2,
+            color: {
+                dark: '#000000',
+                light: '#FFFFFF'
+            }
+        }, function (error) {
+            if (error) console.error(error);
+        });
+
+        // Download function
+        function downloadAPK() {
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = 'kukkuta-kendra.apk';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Auto-generate QR code on page load
+        window.onload = function() {
+            console.log('QR Code generated for:', downloadUrl);
+        };
+    </script>
+</body>
+</html> 

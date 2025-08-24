@@ -21,84 +21,32 @@ export default function LoginScreen() {
   const navigation = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole ]= useState('')
-
-  
-// const handleLogin = () =>{
-//   if(role=='farmer'){}
-
-// }
-
-  // Current mock authentication
-  // const handleMockLogin = () => {
-  //   const validCredentials = [
-  //     { email: "farmer@example.com", password: "farmer123", type: "farmer" },
-  //     { email: "mill@example.com", password: "mill123", type: "mill" },
-  //       { email: "admin@example.com", password: "admin123", type: "admin" },
-  //   { email: "report@example.com", password: "report123", type: "report" }
-  //   ];
-
-  //   const user = validCredentials.find(
-  //     cred => cred.email === email && cred.password === password
-  //   );
-
-  //   if (user) {
-  //     navigateByUserType(user.type);
-  //   } else {
-  //     Alert.alert(
-  //       "Login Failed",
-  //       "Invalid credentials. Try:\nFarmer: farmer@example.com/farmer123\nMill: mill@example.com/mill123"
-  //     );
-  //   }
-  // };
-
-  // Future API integration (ready to uncomment when backend is available)
-  // const handleAPILogin = async () => {
-  //   try {
-  //     // UNCOMMENT WHEN API IS READY
-  //     /*
-  //     const response = await fetch('https://your-api.com/login', {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({ email, password })
-  //     });
-
-  //     const data = await response.json();
-      
-  //     if (response.ok) {
-  //       navigateByUserType(data.userType);
-  //     } else {
-  //       Alert.alert('Login Failed', data.message || 'Invalid credentials');
-  //     }
-  //     */
-  //   } catch (error) {
-  //     Alert.alert('Error', 'Network request failed');
-  //   }
-  // };
 
   // Navigation handler
   const navigateByUserType = (userType: string) => {
-    if (userType === "farmer") {
+    if (userType === "farmer" || userType === "FARMER") {
       navigation.navigate("/farmer/FarmerDashboard");
     } 
-    if (userType === "mill") {
+    if (userType === "mill" || userType === "MILL") {
       navigation.navigate('/mill/MillDashboard');
     }
-    if (userType === "admin") {
+    if (userType === "admin" || userType === "ADMIN") {
       navigation.navigate('/admin/AdminScreen');
     }
-    if (userType === "report") {
+    if (userType === "report" || userType === "REPORT") {
       navigation.navigate('/report/ReportScreen');
     }
   };
 
-  // Combined handler (currently using mock)
+  // Login handler
   const handleLogin = async () => {
     try {
       const payload: LoginPayload = { email, password };
       const data = await login(payload);
+      console.log('Login response:', data);
       navigateByUserType(data.role);
     } catch (error) {
+      console.log('Login error:', error);
       Alert.alert('Login Failed', (error as any).toString());
     }
   };
@@ -131,7 +79,7 @@ export default function LoginScreen() {
             <TextInput
               style={styles.input}
               placeholder="Email"
-               value={email}
+              value={email}
               onChangeText={setEmail}
               placeholderTextColor="#999"
             />
