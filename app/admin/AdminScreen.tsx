@@ -137,6 +137,93 @@ const AdminDashboard = () => {
       // setCurrentFarmer({ ...currentFarmer, document: result.assets[0].uri });
     }
   };
+ // Changed from 'reports' to 'batch'
+const [searchQuery, setSearchQuery] = useState('');
+const [batches, setBatches] = useState([
+  {
+    id: '1',
+    batchNumber: 'BATCH-2024-001',
+    noOfChicks: 5000,
+    aandaDate: '2024-01-15',
+    farmLocation: 'Chittoor, AP',
+    farmerName: 'Rajesh Kumar',
+    breedType: 'Broiler',
+    ageDays: 42,
+    status: 'Completed'
+  },
+  {
+    id: '2',
+    batchNumber: 'BATCH-2024-002',
+    noOfChicks: 7500,
+    aandaDate: '2024-01-20',
+    farmLocation: 'Tirupati, AP',
+    farmerName: 'Suresh Reddy',
+    breedType: 'Layer',
+    ageDays: 35,
+    status: 'In Progress'
+  },
+  {
+    id: '3',
+    batchNumber: 'BATCH-2024-003',
+    noOfChicks: 6000,
+    aandaDate: '2024-01-25',
+    farmLocation: 'Nellore, AP',
+    farmerName: 'Mohan Das',
+    breedType: 'Broiler',
+    ageDays: 28,
+    status: 'Active'
+  }
+]);
+
+const [filteredBatches, setFilteredBatches] = useState(batches);
+
+const handleSearchBatch = (query: string) => {
+  setSearchQuery(query);
+  if (!query.trim()) {
+    setFilteredBatches(batches);
+    return;
+  }
+  const filtered = batches.filter(batch =>
+    batch.batchNumber.toLowerCase().includes(query.toLowerCase()) ||
+    batch.farmerName.toLowerCase().includes(query.toLowerCase()) ||
+    batch.farmLocation.toLowerCase().includes(query.toLowerCase())
+  );
+  setFilteredBatches(filtered);
+};
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'Completed': return '#28a745';
+    case 'Active': return '#17a2b8';
+    case 'In Progress': return '#ffc107';
+    case 'Pending': return '#6c757d';
+    default: return '#6c757d';
+  }
+};
+
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('en-IN');
+};
+
+const handleViewBatch = (batchId: string) => {
+  // Navigate to batch detail screen
+  console.log('View batch:', batchId);
+};
+
+const handleEditBatch = (batchId: string) => {
+  // Navigate to edit batch screen
+  console.log('Edit batch:', batchId);
+};
+
+const handleDeleteBatch = (batchId: string) => {
+  // Show confirmation and delete batch
+  console.log('Delete batch:', batchId);
+};
+
+const handleAddBatch = () => {
+  // Navigate to add batch screen
+  console.log('Add new batch');
+};
 
   return (
     <View style={styles.container}>
@@ -157,6 +244,12 @@ const AdminDashboard = () => {
           onPress={() => setActiveTab('reports')}
         >
           <Text style={styles.tabText}>View Reports</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={[styles.tabButton, activeTab === 'batch' && styles.activeTab]}
+          onPress={() => setActiveTab('batch')}
+        >
+          <Text style={styles.tabText}>View Batch</Text>
         </TouchableOpacity>
       </View>
       
@@ -249,7 +342,110 @@ const AdminDashboard = () => {
           </View>
         </ScrollView>
       )}
+      {/* batch */}
+      {activeTab === 'batch' && (
+  <ScrollView style={styles.contentContainer}>
+    <View style={styles.section}>
+      <Text style={styles.sectionHeader}>Batch Management</Text>
       
+      <View style={styles.filterContainer}>
+        <TextInput
+          style={styles.filterInput}
+          placeholder="Search by batch number..."
+          placeholderTextColor="#999"
+          onChangeText={(text) => handleSearchBatch(text)}
+        />
+        
+        <TouchableOpacity style={styles.filterButton} onPress={() => handleSearchBatch(searchQuery)}>
+          <MaterialIcons name="search" size={24} color="white" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.filterButton, { backgroundColor: themeColors.success }]} onPress={() => handleAddBatch()}>
+          <MaterialIcons name="add" size={24} color="white" />
+        </TouchableOpacity>
+      </View>
+      
+      <View style={styles.reportList}>
+        {filteredBatches.map(batch => (
+          <TouchableOpacity key={batch.id} style={styles.reportCard} onPress={() => handleViewBatch(batch.id)}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <Text style={styles.reportFarmerName}>Batch #{batch.batchNumber}</Text>
+              <View style={{ 
+                backgroundColor: getStatusColor(batch.status), 
+                paddingHorizontal: 12, 
+                paddingVertical: 4, 
+                borderRadius: 12 
+              }}>
+                <Text style={{ color: 'white', fontSize: 12, fontWeight: '600' }}>{batch.status}</Text>
+              </View>
+            </View>
+            
+            <View style={{ marginBottom: 10 }}>
+              <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+                <MaterialIcons name="numbers" size={16} color="#666" style={{ marginRight: 8, marginTop: 2 }} />
+                <Text style={styles.reportDetail}>No of Chicks: {batch.noOfChicks.toLocaleString()}</Text>
+              </View>
+              
+              <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+                <MaterialIcons name="calendar-today" size={16} color="#666" style={{ marginRight: 8, marginTop: 2 }} />
+                <Text style={styles.reportDetail}>Aanda Date: {formatDate(batch.aandaDate)}</Text>
+              </View>
+              
+              <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+                <MaterialIcons name="location-on" size={16} color="#666" style={{ marginRight: 8, marginTop: 2 }} />
+                <Text style={styles.reportDetail}>Farm: {batch.farmLocation}</Text>
+              </View>
+              
+              <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+                <MaterialIcons name="person" size={16} color="#666" style={{ marginRight: 8, marginTop: 2 }} />
+                <Text style={styles.reportDetail}>Farmer: {batch.farmerName}</Text>
+              </View>
+
+              <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+                <MaterialIcons name="pets" size={16} color="#666" style={{ marginRight: 8, marginTop: 2 }} />
+                <Text style={styles.reportDetail}>Breed: {batch.breedType}</Text>
+              </View>
+
+              <View style={{ flexDirection: 'row' }}>
+                <MaterialIcons name="schedule" size={16} color="#666" style={{ marginRight: 8, marginTop: 2 }} />
+                <Text style={styles.reportDetail}>Age: {batch.ageDays} days</Text>
+              </View>
+            </View>
+            
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: '#ddd' }}>
+              <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={() => handleViewBatch(batch.id)}>
+                <Text style={styles.viewReportText}>View Details</Text>
+                <MaterialIcons name="visibility" size={18} color={themeColors.accent} style={{ marginLeft: 5 }} />
+              </TouchableOpacity>
+              
+              <View style={{ flexDirection: 'row' }}>
+                <TouchableOpacity style={{ marginLeft: 15, padding: 8 }} onPress={() => handleEditBatch(batch.id)}>
+                  <MaterialIcons name="edit" size={18} color={themeColors.success} />
+                </TouchableOpacity>
+                
+                <TouchableOpacity style={{ marginLeft: 15, padding: 8 }} onPress={() => handleDeleteBatch(batch.id)}>
+                  <MaterialIcons name="delete" size={18} color={themeColors.danger} />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {filteredBatches.length === 0 && (
+        <View style={{ alignItems: 'center', justifyContent: 'center', padding: 40 }}>
+          <MaterialIcons name="inbox" size={64} color="#ddd" />
+          <Text style={styles.emptyText}>No batches found</Text>
+          <Text style={[styles.reportDetail, { textAlign: 'center', marginBottom: 20 }]}>Create your first batch to get started</Text>
+          <TouchableOpacity style={styles.addButton} onPress={() => handleAddBatch()}>
+            <MaterialIcons name="add" size={20} color="white" />
+            <Text style={styles.addButtonText}>Create New Batch</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </View>
+  </ScrollView>
+)}
       {/* Add/Edit Farmer Modal */}
       <Modal
         visible={isFormVisible}

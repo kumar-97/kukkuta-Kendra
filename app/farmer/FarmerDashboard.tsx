@@ -17,6 +17,7 @@ const FarmerDashboard = () => {
   
   // Routine Section States
   const [mortalityCount, setMortalityCount] = useState('');
+  const [unityBirdCount, setUnityBirdCount] = useState('');
   const [feedConsumption, setFeedConsumption] = useState('');
   const [birdWeight, setBirdWeight] = useState('');
   const [mortalityImage, setMortalityImage] = useState<string | null>(null);
@@ -120,6 +121,15 @@ const FarmerDashboard = () => {
           <View style={styles.section}>
             <Text style={styles.sectionHeader}>Daily Farm Routine</Text>
             
+            {/* total bird coun */}
+            <Text style={styles.label}>Total Birds</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Number of birds"
+              keyboardType="numeric"
+              value={unityBirdCount}
+              onChangeText={setUnityBirdCount}
+            />
             {/* Mortality */}
             <Text style={styles.label}>Mortality Count</Text>
             <TextInput
@@ -145,7 +155,7 @@ const FarmerDashboard = () => {
             )}
             
             {/* Feed Consumption */}
-            <Text style={styles.label}>Feed Consumption (kg)</Text>
+            <Text style={styles.label}>Feed Consumption (Bag)</Text>
             <TextInput
               style={styles.input}
               placeholder="Total feed consumed today"
@@ -178,7 +188,7 @@ const FarmerDashboard = () => {
           <View style={styles.section}>
             <Text style={styles.sectionHeader}>Place Feed Order</Text>
             
-            <Text style={styles.label}>Prestarter Feed (kg)</Text>
+            <Text style={styles.label}>Prestarter Feed (Bag)</Text>
             <TextInput
               style={styles.input}
               placeholder="Quantity needed"
@@ -187,7 +197,7 @@ const FarmerDashboard = () => {
               onChangeText={setPrestarter}
             />
             
-            <Text style={styles.label}>Starter Feed (kg)</Text>
+            <Text style={styles.label}>Starter Feed (Bag)</Text>
             <TextInput
               style={styles.input}
               placeholder="Quantity needed"
@@ -196,7 +206,7 @@ const FarmerDashboard = () => {
               onChangeText={setStarter}
             />
             
-            <Text style={styles.label}>Finisher Feed (kg)</Text>
+            <Text style={styles.label}>Finisher Feed (Bag)</Text>
             <TextInput
               style={styles.input}
               placeholder="Quantity needed"
@@ -219,7 +229,7 @@ const FarmerDashboard = () => {
           <View style={styles.section}>
             <Text style={styles.sectionHeader}>Sell Birds</Text>
             
-            <Text style={styles.label}>Total Weight (kg)</Text>
+            <Text style={styles.label}>Total Weight (Bag)</Text>
             <TextInput
               style={styles.input}
               placeholder="Total weight of birds"
@@ -265,7 +275,7 @@ const FarmerDashboard = () => {
               style={styles.submitButton}
               onPress={handleSellSubmit}
             >
-              <Text style={styles.buttonText}>List Birds for Sale</Text>
+              <Text style={styles.buttonText}>Submit</Text>
             </TouchableOpacity>
           </View>
         )}
