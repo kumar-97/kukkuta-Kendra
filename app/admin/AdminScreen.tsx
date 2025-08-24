@@ -76,22 +76,95 @@ const AdminDashboard = () => {
   
   const { width } = Dimensions.get('window');
   const isSmallScreen = width < 375;
+  const [loading, setLoading] = useState(false);
 
-  const handleAddFarmer = () => {
-    if (!currentFarmer.name || !currentFarmer.address || !currentFarmer.mobile || !currentFarmer.type) {
+  // API base URL - change this to your actual API endpoint
+  const API_BASE_URL = 'https://your-api-domain.com/api';
+
+  //new code for ad famrer from admin
+  const handleAddFarmer = async () => {
+    console.log("inside addddddddddddddd")
+    // Validation
+    if (!currentFarmer.name || !currentFarmer.address || 
+        !currentFarmer.mobile || !currentFarmer.type) {
       Alert.alert('Error', 'Please fill all required fields');
       return;
     }
-    
-    if (isEditing) {
-      setFarmers(farmers.map(f => f.id === currentFarmer.id ? currentFarmer : f));
-    } else {
-      setFarmers([...farmers, { ...currentFarmer, id: Date.now().toString() }]);
+  
+    if (!/^\d{10}$/.test(currentFarmer.mobile)) {
+      Alert.alert('Error', 'Please enter a valid 10-digit mobile number');
+      return;
     }
+  
+    setLoading(true);
     
-    resetForm();
+    try {
+      const url = isEditing 
+        ? `${API_BASE_URL}/editFarmers/${currentFarmer.id}`
+        : `${API_BASE_URL}/addFarmers`;
+      console.log(url)
+      const method = isEditing ? 'PUT' : 'POST';
+      
+      // Create form data to handle file upload
+      const formData = new FormData();
+      formData.append('name', currentFarmer.name);
+      formData.append('address', currentFarmer.address);
+      formData.append('mobile', currentFarmer.mobile);
+      formData.append('type', currentFarmer.type);
+      
+      // if (currentFarmer.document) {
+      //   formData.append('document', {
+      //     uri: currentFarmer.document,
+      //     type: 'image/jpeg', // adjust based on actual file type
+      //     name: 'document.jpg',
+      //   });
+      // }
+   console.log(formData)
+      const response = await fetch(url, {
+        method: method,
+        body: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        Alert.alert(
+          'Success', 
+          isEditing ? 'Farmer updated successfully!' : 'Farmer added successfully!',
+          [{ text: 'OK', onPress: () => {
+            resetForm();
+            refreshFarmers(); // Call this to refresh the farmer list
+          }}]
+        );
+      } else {
+        throw new Error(data.message || 'Something went wrong');
+      }
+    } catch (error) {
+      // Alert.alert('Error', error.message);
+    } finally {
+      setLoading(false);
+    }
   };
-
+  const refreshFarmers = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/farmers`);
+      const data = await response.json();
+      
+      if (response.ok) {
+        setFarmers(data.data); // Assuming your API returns { success: true, data: [...] }
+      } else {
+        throw new Error(data.message || 'Failed to fetch farmers');
+      }
+    } catch (error) {
+      // Alert.alert('Error', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleEditFarmer = (farmer :any) => {
     setCurrentFarmer(farmer);
     setDocumentImage(farmer.document);
