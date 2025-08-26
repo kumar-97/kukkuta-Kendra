@@ -6,9 +6,9 @@ const Index = () => {
   const router = useRouter();
 
   useEffect(() => {
-    // Navigate to test screen first to verify app is working
+    // Navigate to welcome screen now that we know the app works
     const timer = setTimeout(() => {
-      router.replace("/test");
+      router.replace("/screens/WelcomeScreen");
     }, 100);
 
     return () => clearTimeout(timer);
