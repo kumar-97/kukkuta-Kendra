@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 import time
 import os
 
+
 from app.config import settings
 from app.database import create_tables
 from app.api import api_router
