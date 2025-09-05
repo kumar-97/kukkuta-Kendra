@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   View, 
   Text, 
@@ -8,22 +8,16 @@ import {
   TouchableOpacity, 
   Image, 
   Dimensions,
-  Alert,
-  ActivityIndicator
+  Alert
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { submitRoutineData, uploadMortalityPhoto, submitMortalityRecord, RoutineData } from '../services/routineService';
-import { getProfile } from '../services/farmerService';
 
 const FarmerDashboard = () => {
   const [activeTab, setActiveTab] = useState<'routine' | 'order' | 'sell'>('routine');
   
-  // Farmer States
-  const [farmerProfile, setFarmerProfile] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  
   // Routine Section States
   const [mortalityCount, setMortalityCount] = useState('');
+  const [unityBirdCount, setUnityBirdCount] = useState('');
   const [feedConsumption, setFeedConsumption] = useState('');
   const [birdWeight, setBirdWeight] = useState('');
   const [mortalityImage, setMortalityImage] = useState<string | null>(null);
@@ -41,21 +35,6 @@ const FarmerDashboard = () => {
 
   const { width } = Dimensions.get('window');
   const isSmallScreen = width < 375;
-
-  // Load farmer profile and farms on component mount
-  useEffect(() => {
-    loadFarmerProfile();
-  }, []);
-
-  const loadFarmerProfile = async () => {
-    try {
-      const profile = await getProfile();
-      setFarmerProfile(profile);
-    } catch (error) {
-      console.error('Error loading farmer profile:', error);
-      Alert.alert('Error', 'Failed to load farmer profile');
-    }
-  };
 
   // Image Picker Function
   const pickImage = async (setImage: React.Dispatch<React.SetStateAction<string | null>>) => {
@@ -79,57 +58,13 @@ const FarmerDashboard = () => {
   };
 
   // Submit Handlers
-  const handleRoutineSubmit = async () => {
+  const handleRoutineSubmit = () => {
     if (!mortalityCount || !feedConsumption || !birdWeight) {
       Alert.alert('Error', 'Please fill all routine fields');
       return;
     }
-
-    setLoading(true);
-    try {
-      // Prepare routine data
-      const routineData: RoutineData = {
-        date: new Date().toISOString(), // Current timestamp
-        mortality_count: parseInt(mortalityCount) || 0,
-        feed_consumption_kg: parseFloat(feedConsumption),
-        average_bird_weight_g: parseFloat(birdWeight),
-      };
-
-      // Submit routine data
-      const response = await submitRoutineData(routineData);
-
-      // If there's a mortality image, upload it and create mortality record
-      if (mortalityImage && parseInt(mortalityCount) > 0) {
-        try {
-          const uploadResponse = await uploadMortalityPhoto(mortalityImage);
-          
-          // Create mortality record
-          await submitMortalityRecord({
-            routine_data_id: response.id,
-            count: parseInt(mortalityCount),
-            photo_url: uploadResponse.file_url,
-            notes: 'Mortality recorded with photo'
-          });
-        } catch (uploadError) {
-          console.error('Error uploading mortality photo:', uploadError);
-          // Continue without photo if upload fails
-        }
-      }
-
-      Alert.alert('Success', 'Routine data submitted successfully!');
-      
-      // Clear form
-      setMortalityCount('');
-      setFeedConsumption('');
-      setBirdWeight('');
-      setMortalityImage(null);
-      
-    } catch (error: any) {
-      console.error('Error submitting routine data:', error);
-      Alert.alert('Error', error.response?.data?.detail || 'Failed to submit routine data');
-    } finally {
-      setLoading(false);
-    }
+    Alert.alert('Success', 'Routine data submitted!');
+    // Here you would make API call
   };
 
   const handleOrderSubmit = () => {
@@ -186,8 +121,15 @@ const FarmerDashboard = () => {
           <View style={styles.section}>
             <Text style={styles.sectionHeader}>Daily Farm Routine</Text>
             
-
-            
+            {/* total bird coun */}
+            <Text style={styles.label}>Total Birds</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Number of birds"
+              keyboardType="numeric"
+              value={unityBirdCount}
+              onChangeText={setUnityBirdCount}
+            />
             {/* Mortality */}
             <Text style={styles.label}>Mortality Count</Text>
             <TextInput
@@ -198,7 +140,7 @@ const FarmerDashboard = () => {
               onChangeText={setMortalityCount}
             />
             
-            <TouchableOpacity
+            <TouchableOpacity 
               style={styles.photoButton}
               onPress={() => pickImage(setMortalityImage)}
             >
@@ -213,7 +155,7 @@ const FarmerDashboard = () => {
             )}
             
             {/* Feed Consumption */}
-            <Text style={styles.label}>Feed Consumption (kg)</Text>
+            <Text style={styles.label}>Feed Consumption (Bag)</Text>
             <TextInput
               style={styles.input}
               placeholder="Total feed consumed today"
@@ -233,18 +175,10 @@ const FarmerDashboard = () => {
             />
             
             <TouchableOpacity 
-              style={[styles.submitButton, loading && styles.submitButtonDisabled]}
+              style={styles.submitButton}
               onPress={handleRoutineSubmit}
-              disabled={loading}
             >
-              {loading ? (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator color={themeColors.white} size="small" />
-                  <Text style={styles.buttonText}>Submitting...</Text>
-                </View>
-              ) : (
-                <Text style={styles.buttonText}>Submit Routine Data</Text>
-              )}
+              <Text style={styles.buttonText}>Submit Routine Data</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -254,7 +188,7 @@ const FarmerDashboard = () => {
           <View style={styles.section}>
             <Text style={styles.sectionHeader}>Place Feed Order</Text>
             
-            <Text style={styles.label}>Prestarter Feed (kg)</Text>
+            <Text style={styles.label}>Prestarter Feed (Bag)</Text>
             <TextInput
               style={styles.input}
               placeholder="Quantity needed"
@@ -263,7 +197,7 @@ const FarmerDashboard = () => {
               onChangeText={setPrestarter}
             />
             
-            <Text style={styles.label}>Starter Feed (kg)</Text>
+            <Text style={styles.label}>Starter Feed (Bag)</Text>
             <TextInput
               style={styles.input}
               placeholder="Quantity needed"
@@ -272,7 +206,7 @@ const FarmerDashboard = () => {
               onChangeText={setStarter}
             />
             
-            <Text style={styles.label}>Finisher Feed (kg)</Text>
+            <Text style={styles.label}>Finisher Feed (Bag)</Text>
             <TextInput
               style={styles.input}
               placeholder="Quantity needed"
@@ -295,7 +229,7 @@ const FarmerDashboard = () => {
           <View style={styles.section}>
             <Text style={styles.sectionHeader}>Sell Birds</Text>
             
-            <Text style={styles.label}>Total Weight (kg)</Text>
+            <Text style={styles.label}>Total Weight (Bag)</Text>
             <TextInput
               style={styles.input}
               placeholder="Total weight of birds"
@@ -341,7 +275,7 @@ const FarmerDashboard = () => {
               style={styles.submitButton}
               onPress={handleSellSubmit}
             >
-              <Text style={styles.buttonText}>List Birds for Sale</Text>
+              <Text style={styles.buttonText}>Submit</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -482,16 +416,6 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     borderWidth: 1,
     borderColor: '#ced4da',
-  },
-
-  submitButtonDisabled: {
-    backgroundColor: '#6c757d',
-    opacity: 0.7,
-  },
-  loadingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
 
